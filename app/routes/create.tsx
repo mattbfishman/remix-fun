@@ -64,9 +64,7 @@ export default function Create() {
     const errors = actionData?.errors;
 
 	return (
-
         <Form key="create" id="create-form" method="post">
-
             <div className="flex flex-col items-center h-screen justify-center border" id="create">
                 <div className="border-2 w-[50%] min-h-[400px] flex flex-col justify-center items-center rounded border-black">
                     <h2>Create Account</h2>

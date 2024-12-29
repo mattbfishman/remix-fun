@@ -9,6 +9,7 @@ export type User = {
 };
 
 export const authenticator = new Authenticator<User>();
+export const loginAuth = new Authenticator<boolean>();
 
 authenticator.use(
   new FormStrategy(async ({form}) => {
@@ -29,3 +30,27 @@ authenticator.use(
   "create-user"
 );
 
+loginAuth.use(
+  new FormStrategy(async ({form}) => {
+    const email = form.get("email");
+    const password = form.get("password");
+    const passwordHash = await bcrypt.hash((password as string), 10);
+
+    console.log(passwordHash);
+
+    
+    const user = await prisma.User.findUnique({
+      where: {
+        email: email
+      }
+    });
+
+
+    console.log(user);
+    if(user) {
+      return true;
+    }
+    return false;
+  }),
+  "login"
+);
