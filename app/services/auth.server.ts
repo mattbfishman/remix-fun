@@ -20,11 +20,6 @@ authenticator.use(
         email, password: passwordHash, first_name: firstName, last_name: lastName
       }
     });
-
-
-    console.log(user);
-    console.log('the user is');
-
   
     return {
       firstName: firstName,
