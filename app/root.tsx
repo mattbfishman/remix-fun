@@ -8,6 +8,8 @@ import {
 } from "@remix-run/react";
 import stylesheet from "~/tailwind.css?url";
 import { getSession } from "./services/sessions";
+import UserContext, { User } from "./context/userContext";
+import { useState } from "react";
 
 
 export async function loader({ request }: LoaderFunctionArgs) {
@@ -23,6 +25,8 @@ export const links: LinksFunction = () => [
 
 
 export default function App() {
+  const [user, setUser] = useState<User | null>(null);
+
   return (
     <html lang="en">
       <head>
@@ -32,7 +36,9 @@ export default function App() {
         <Links />
       </head>
       <body>
-        <Outlet />
+        <UserContext.Provider value={{user, loggedIn: false, setUser}}>
+          <Outlet />
+        </UserContext.Provider>
         <ScrollRestoration />
         <Scripts />
       </body>

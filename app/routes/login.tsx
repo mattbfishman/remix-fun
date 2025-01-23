@@ -1,37 +1,38 @@
 import { ActionFunction, redirect } from "@remix-run/node";
 // import { prisma } from "../db.server"
-import { Form, NavLink, useLoaderData } from "@remix-run/react";
+import { Form, NavLink, useActionData } from "@remix-run/react";
 import { loginAuth } from "~/services/auth.server";
 import { commitSession, getSession } from "~/services/sessions";
 
-// export async function loader() {
-// 	// const data = await prisma.User.findMany()
-// 	return json({data})
-// }
-
 export const action: ActionFunction = async ({request}) => {
-    const user = await loginAuth.authenticate("login", request);
-    const session = await getSession(request.headers.get("cookie"));
-    
-    session.set("user", user.toString());
+	let user, session;
+    try {
+		user = await loginAuth.authenticate("login", request);
+		session = await getSession(request.headers.get("cookie"));
+	} catch (e) {
+		return {
+			errors: { login: 'Email or Password is incorrect'},
+			success: false
+		};
 
+	}
     
     if (user){
+		session.set("user", user.toString());
         throw redirect("/", {
             headers: { "Set-Cookie": await commitSession(session) },
         });
     }
 
-
     return {
-        success: true
+		errors:  { login: 'Email or Password is incorrect'},
+        success: false
     };
 };
 
 export default function Login() {
-	const data = useLoaderData();
-
-	console.log(data);
+	const actionData = useActionData<typeof action>();
+	const errors = actionData?.errors;
 
 	return (
 		<Form key="login" id="login-form" method="post">
@@ -55,6 +56,7 @@ export default function Login() {
 							</div>
 						</div>
 					</div>
+					{errors?.login && <div className="text-red-600">{errors?.login}</div> }
 					<div className="flex flex-row gap-2 mt-2 w-full justify-center">
 						<button type="submit" className="border-2 p-1 min-w-min rounded border-black">Login</button>
 						<NavLink to="/create">

@@ -13,7 +13,7 @@ export const action: ActionFunction = async ({request}) => {
     const confirmPassword = String(formData.get("confirmPassword"));
     const errors = {} as Record<string, string>;
 
-    const exists = await prisma.User.findUnique({
+    const exists = await prisma.user.findUnique({
         where: {
             email: email
         },
