@@ -5,7 +5,7 @@ import bcrypt from "bcryptjs";
 import {User} from "~/context/userContext";
 
 export const authenticator = new Authenticator<User>();
-export const loginAuth = new Authenticator<boolean>();
+export const loginAuth = new Authenticator<User | boolean>();
 
 authenticator.use(
   new FormStrategy(async ({form}) => {
@@ -15,7 +15,7 @@ authenticator.use(
     const lastName = form.get("lastName") as string;
     const passwordHash = await bcrypt.hash((password as string), 10);
 
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data: {
         email, password: passwordHash, first_name: firstName, last_name: lastName
       }
@@ -47,8 +47,15 @@ loginAuth.use(
 
     const inputPassword = user?.password ? user?.password : '';
     const res = await bcrypt.compare(password, inputPassword);
-  
-    return res;
+    
+    if(res){
+      return {
+        email: user?.email,
+        firstName: user?.first_name,
+        lastName: user?.last_name
+      };
+    }
+    return false;
   }),
   "login"
 );

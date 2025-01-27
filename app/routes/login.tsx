@@ -18,7 +18,7 @@ export const action: ActionFunction = async ({request}) => {
 	}
     
     if (user){
-		session.set("user", user.toString());
+		session.set("user", JSON.stringify(user));
         throw redirect("/", {
             headers: { "Set-Cookie": await commitSession(session) },
         });

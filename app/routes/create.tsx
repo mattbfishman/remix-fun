@@ -48,8 +48,8 @@ export const action: ActionFunction = async ({request}) => {
     
     if (user){
         throw redirect("/", {
-            headers: { "Set-Cookie": await commitSession(session) },
-        });
+            headers: { "Set-Cookie": await commitSession() },
+        });session
     }
 
 
